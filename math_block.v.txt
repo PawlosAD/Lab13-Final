@@ -1,8 +1,19 @@
 module math_block(
-    input [3:0] A,
-    input [3:0] B,
-    output [3:0] AplusB,
-    output [3:0] AminusB
+   input [3:0] A,
+   input [3:0] B,
+   input select,
+   input clock,
+   input reset,
+   output reg [7:0] result
 );
+
+   always @(posedge clock or posedge reset) begin
+       if (reset)
+           result <= 0;
+       else if (select)
+           result <= A - B;
+       else
+           result <= A + B;
+   end
 
 endmodule

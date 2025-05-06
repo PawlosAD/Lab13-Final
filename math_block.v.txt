@@ -17,6 +17,6 @@ module math_block(
         .A(A),
         .B(B),
         .Diff(AminusB)
-    )z
+    );
 endmodule
 

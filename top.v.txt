@@ -1,28 +1,33 @@
+/* Top level module that integrates all components for the 4 bit calculator system displayed on a 4 digit 7 segment display and it reads 8 switches(two 4 bit numbers), it performs addition and subtraction, and it multiplexes the results to the 7 segment display.
+*/
 module top
 #(
-    parameter DIVIDE_BY = 17
+    parameter DIVIDE_BY = 17 
 )
 (
-    input [7:0] sw,    // A and B inputs
+    input [7:0] sw,    // A and B inputs //8 bit switch input (sw[3:0] = A, sw[7:4] = B)
     input clk,         // 100 MHz board clock
-    input btnC,        // Reset button
+    input btnC,        // Active high Reset button
     output [3:0] an,   // 7seg anodes
     output [6:0] seg   // 7seg segments
 );
 
+    // Split swithces into 4 bit A and B
     wire [3:0] A = sw[3:0];
     wire [3:0] B = sw[7:4];
-    
-    wire div_clk;
-    wire [3:0] AplusB, AminusB;
-    
+
+    // Internal wires that for divided clock and math results
+    wire div_clk; // Divided down clock for display scanning
+    wire [3:0] AplusB, AminusB; // 4 bit addition and subtraction results
+
+    // Instantiate clock divider module
     clock_div #(.DIVIDE_BY(DIVIDE_BY)) clk_divider (
-        .clock(clk),
-        .reset(btnC),
-        .clk_out(div_clk)
+        .clock(clk), //100 MHz system clock
+        .reset(btnC), //Reset signal
+        .clk_out(div_clk) // Divided clock output
     );
 
-    
+    // Instantiate math block to perform A+B and A-B operations
     math_block math (
         .A(A),
         .B(B),
@@ -37,7 +42,7 @@ module top
         .anode(an)
     );
     
-    // Seven segment decoder to display the values
+    // Seven segment decoder to display values
     seven_seg_decoder decoder (
         .A(A),
         .B(B),

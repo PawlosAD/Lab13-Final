@@ -1,34 +1,39 @@
+// Controls the anode selection for 4 digit 7 segment display.
+// It uses a 2 bit counter driven by divided clock signal to cycle through each digit sequentially and enables one digit at a time by setting the corresponding anode signal low, which allows for the multiplexed display of four values
 module seven_seg_scanner(
-    input div_clock,
-    input reset,
-    output reg [3:0] anode
+    input div_clock, // Divided clock input thats for scanning rate control
+    input reset, // Active high asynchrohnous reset
+    output reg [3:0] anode // Active low 4 bit andoe control for 7 seggment display
 );
-    // Two Bit Counter Register
+    // Two Bit Counter Register that tracks current activy display position
     reg [1:0] counter;
     
     // Two Bit Counter: 00 -> 01 -> 10 -> 11
+    // Counter block increments on each rising edge of div_clock and resets to 0 when reset is asserted
     always @(posedge div_clock or posedge reset) begin
         if (reset) begin
-            counter <= 2'b00;
+            counter <= 2'b00; //Reset counter to 0
         end else begin
-            counter <= counter + 1'b1;
+            counter <= counter + 1'b1; // Increment counter
         end
     end
     
     // Map counter to anode selection
+    // Selects one anode based on counter value
+    // 0 enables corresponding digit and 1 disables it
     always @(*) begin
         case(counter)
             2'b00: begin
-                anode = 4'b1110;  // Right segment
+                anode = 4'b1110;  // Right segment(Activate digit 0)
             end
             2'b01: begin
-                anode = 4'b1101;  // Right Center segment
+                anode = 4'b1101;  // Right Center segment(Activate digit 1)
             end
             2'b10: begin
-                anode = 4'b1011;  // Left Center segment
+                anode = 4'b1011;  // Left Center segment(Activate digit 2)
             end
             2'b11: begin
-                anode = 4'b0111;  // Left segment
+                anode = 4'b0111;  // Left segment(Activate digit 3)
             end
             default: begin
                 anode = 4'b1111;  // All segments off

@@ -1,22 +1,30 @@
+// Performs both addition and subtraction on two 4 bit inputs and instantiates four_bit_adder in order to compute A+B and a four_bit_subtractor to compute A-B
+// Results are output as separate 4 bit values
 module math_block(
-    input [3:0] A,
-    input [3:0] B,
-    output [3:0] AplusB,
-    output [3:0] AminusB
+    input [3:0] A, // 4 bit input operand
+    input [3:0] B, // Second 4 bit input operand
+    output [3:0] AplusB, // 4 bit sum output of A+B
+    output [3:0] AminusB // 4 bit difference output of A-B
 );
+
+    //Internal wire that captures carry out from the adder.
+    // This is unused here because only the 4 bit result is needed
     wire carry_out_add;
+
+    // Instantiate four bit adder in order to compute A + B
     four_bit_adder adder(
-        .A(A),
-        .B(B),
-        .Cin(1'b0),
-        .Sum(AplusB),
-        .Cout(carry_out_add) // Unused because we only want 4-bits. Cout = 1 means A+B > 15 which is an overflow.
+        .A(A), // Connect A input
+        .B(B), // Connect B input
+        .Cin(1'b0), // No initial carryin for addition
+        .Sum(AplusB), // Connect sum output
+        .Cout(carry_out_add) // Capture carry out. Unused because we only want 4-bits. Cout = 1 means A+B > 15 which is an overflow.
     );
-    
+
+    // Instantiate four bit subtractor in order to compute A-B
     four_bit_subtractor subtractor(
-        .A(A),
-        .B(B),
-        .Diff(AminusB)
+        .A(A), // Connect A input
+        .B(B), // Connect B input
+        .Diff(AminusB) // Connect difference output
     );
 endmodule
 

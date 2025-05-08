@@ -1,35 +1,39 @@
+// Controls 7 segment display by decoding 4 bit binary values into corresponding 7 segment patterns for digits 0-F
+// Seletcs which value to display (A, B, AplusB, or AminusB) based on active anode line using active low logig for anode selection
 module seven_seg_decoder(
-    input [3:0] A,
-    input [3:0] B,
-    input [3:0] AplusB,
-    input [3:0] AminusB,
-    input [3:0] anode,
-    output reg [6:0] segs
+    input [3:0] A, //   4 bit value for operand A
+    input [3:0] B, // 4 bit value for operand B
+    input [3:0] AplusB, // 4 bit result of A + B
+    input [3:0] AminusB, // 4 bit result oof A-B
+    input [3:0] anode, // 4 bit active low anode selector input
+    output reg [6:0] segs // 7 bit output to drive 7 segment display segments
 );
-    reg [3:0] value_to_display;
+    reg [3:0] value_to_display; //Internal register to hold currently selected value for display
     
-    // Multiplexer to select which value to display
+    // Multiplexer to select which value to send to 7 segment decoder
+    // based on active anode input where '0' means active
     always @(*) begin
         case(anode)
             4'b1110: begin
-                value_to_display = A;
+                value_to_display = A; // Anode 0 active - Show A
             end
             4'b1101: begin
-                value_to_display = B;
+                value_to_display = B; // Anode 1 active - Show B
             end
             4'b1011: begin
-                value_to_display = AplusB;
+                value_to_display = AplusB; // Anode 2 active - Show A + B
             end
             4'b0111: begin
-                value_to_display = AminusB;
+                value_to_display = AminusB; // Anode 3 active - Show  A - B
             end
             default: begin
-                value_to_display = 4'b0000;
+                value_to_display = 4'b0000; // If no valid anode, default to 0
             end
         endcase
     end
     
     // Decode 4-bit value to 7-segment display
+    // Segment encoding: {G, F, E, D, C, B, A}
     always @(*) begin
         case(value_to_display)
             //             GFEDCBA
